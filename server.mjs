@@ -97,13 +97,13 @@ const server = http.createServer(async (req, res) => {
 
     try {
       // 查所有 Key，找是否已有这个邮箱
-      const keys = await callFC("/admin/list-keys", "GET", null, { "x-admin-key": "12345" });
+      const keys = await callFC("/admin/list-keys", "GET", null, { "x-admin-key": process.env.ADMIN_PASSWORD || "change-me" });
       const existing = keys.find(k => (k.label || "").toLowerCase().includes(email));
       if (existing) {
         return res.end(JSON.stringify({ key: existing.key, quota: existing.quota, used: existing.used, label: existing.label, isNew: false }));
       }
       // 新用户：生成 Key，送 3 次
-      const result = await callFC("/admin/generate-key", "POST", { label: email, quota: 3 }, { "x-admin-key": "12345" });
+      const result = await callFC("/admin/generate-key", "POST", { label: email, quota: 3 }, { "x-admin-key": process.env.ADMIN_PASSWORD || "change-me" });
       res.end(JSON.stringify({ key: result.key, quota: 3, used: 0, label: email, isNew: true }));
     } catch (e) {
       res.writeHead(502); res.end(JSON.stringify({ error: "FC unreachable" }));

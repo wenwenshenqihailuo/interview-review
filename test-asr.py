@@ -6,7 +6,7 @@ import requests
 import base64
 import os
 
-API_KEY = "sk-ws-H.EIEHEPE.BWY7.MEQCIAPP5ikUVARpIFd1EMJRgORY9415SRJUuvkC5aQbit3TAiAxvSYCfkh3qoVzLOOsTDkO1yEosLvXdwSSAt-sQWkDQg"
+API_KEY = os.environ.get("DASHSCOPE_API_KEY", "sk-your-key-here")
 MODEL = "fun-asr-flash-2026-06-15"
 FILE = "C:/Users/macob/Desktop/录音 2.m4a"  # 改这里测试不同文件
 

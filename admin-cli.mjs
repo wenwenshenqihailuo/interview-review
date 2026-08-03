@@ -13,7 +13,7 @@
 import https from "https";
 
 const PROXY = "interview-proxy-zuoftlbtnc.cn-hangzhou.fcapp.run";
-const PASSWORD = "12345";
+const PASSWORD = process.env.ADMIN_PASSWORD || "change-me";
 
 function api(method, path, body) {
   return new Promise((resolve, reject) => {

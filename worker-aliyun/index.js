@@ -6,8 +6,8 @@ const fs = require("fs");
 const http = require("http");
 const https = require("https");
 
-const ADMIN_PASSWORD = "12345";
-const REAL_API_KEY = "sk-ws-H.EIEHEPE.BWY7.MEQCIAPP5ikUVARpIFd1EMJRgORY9415SRJUuvkC5aQbit3TAiAxvSYCfkh3qoVzLOOsTDkO1yEosLvXdwSSAt-sQWkDQg";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change-me";
+const REAL_API_KEY = process.env.DASHSCOPE_API_KEY || "sk-your-key-here";
 const KEYS_FILE = "/mnt/interview_proxy/interview_keys.json"; // NAS 持久化
 
 function loadKeys() { try { if (fs.existsSync(KEYS_FILE)) return JSON.parse(fs.readFileSync(KEYS_FILE,"utf-8")); } catch {} return {}; }
