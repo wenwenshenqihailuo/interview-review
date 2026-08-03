@@ -1,0 +1,10 @@
+node_modules/
+插件-面试复盘助手/
+面试复盘-测试版/
+*.m4a
+*.mp4
+.workbuddy/
+CNAME
+main.js
+*.bak
+*.backup
