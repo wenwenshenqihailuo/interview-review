@@ -1,6 +1,0 @@
-{
-  "name": "interview-review-proxy-fc",
-  "version": "1.0.0",
-  "description": "面试复盘助手 API 代理（阿里云函数计算版）",
-  "main": "index.js"
-}

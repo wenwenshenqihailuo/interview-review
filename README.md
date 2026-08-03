@@ -1,136 +1,46 @@
-# Interview Review Assistant
+# 面试复盘助手
 
-> AI-powered interview analysis — upload recordings, get professional review reports in your Obsidian vault.
+> Obsidian 插件 —— 录音转文字 + AI 深度分析，一键生成面试复盘报告。
 
-Powered by **Fun-ASR-Flash** (world's #1 speech recognition model) and **Qwen-Plus** for deep analytical insights, running on a fully serverless Alibaba Cloud infrastructure.
+一个阿里云百炼 API Key 即可使用，无需额外部署。
 
----
+## 功能
 
-## Architecture
+- **🎙️ 语音转文字**：支持 MP3 / WAV / M4A / AAC / FLAC / OGG 等音频格式，以及 MP4 / MOV / AVI / MKV / WebM / FLV / WMV 等视频格式。自动提取音频、智能分段，不限时长。
+- **🧠 AI 复盘分析**：六维度评分（技术深度、表达清晰度、回答结构、语言能力、软技能、综合表现），逐题拆解（总结 → 亮点 → 改进点 → 建议思路 → 优先级），支持粘贴 JD 做针对性评估。
+- **📝 结构化报告**：短/中/长期可执行的改进计划，报告持久化保存在 Obsidian vault 中。
+- **🔑 授权管理**：License Key 机制，支持配额管理和客户自助注册。
 
-```
-Obsidian Plugin (TypeScript)
-    │
-    ├── Transcription ──── FC Proxy (512MB) ──── DashScope fun-asr-flash
-    │
-    └── Analysis / Auth ── FC Proxy (128MB) ──── DashScope qwen-plus
-                                  │
-                                  └── NAS (Key Persistence)
-```
+## 安装
 
-## Features
+1. 下载插件文件，放入 Obsidian vault 的 `.obsidian/plugins/interview-review/` 目录
+2. 确保系统已安装 [FFmpeg](https://ffmpeg.org/)（用于音视频处理）
+3. 在插件设置中填入阿里云百炼 API Key
+4. 启用插件即可使用
 
-### Speech-to-Text
-- 6 audio formats (MP3 / WAV / M4A / AAC / FLAC / OGG) & 7 video formats (MP4 / MOV / AVI / MKV / WebM / FLV / WMV)
-- Auto audio extraction and compression via FFmpeg
-- Time-based intelligent chunking for recordings of any length
-- Both synchronous (≤5 min) and chunked streaming modes
+## 使用
 
-### AI Review Analysis
-- **6-dimension scoring**: Technical depth, communication clarity, answer structure, language proficiency, soft skills, overall performance
-- **Per-question breakdown**: Summary → Highlights → Improvements → Suggested approach → Priority ranking
-- **JD-aware evaluation**: Paste the job description for targeted feedback
-- **Structured report**: Short / Mid / Long-term actionable improvement plans
-- Streaming response for real-time progress feedback
+- 点击左侧 Ribbon 栏的 🎤 图标，或使用命令面板搜索「复盘面试录音/视频」
+- 选择录音/视频文件，插件会自动转写并生成分析报告
+- 也可以直接粘贴已有的文字稿进行复盘分析
 
-### License & Quota System
-- Cryptographically-random license key generation
-- Usage-based quota with renewal and batch operations
-- Customer self-registration portal (3 free trial uses)
-- Admin dashboard with key lifecycle management
-- NAS-persisted data (survives cold starts and deployments)
+## 构建
 
-### Plugin Experience
-- Multi-stage progress visualization
-- Persistent reports (survive modal close and app restart)
-- FFmpeg auto-detection with platform-specific guidance
-- Dual input mode: file upload or paste transcript
-- AI analysis toggle (transcription-only mode saves quota)
-
----
-
-## Project Structure
-
-```
-├── src/                          # Obsidian Plugin (TypeScript)
-│   ├── main.ts                   # Entry point: commands, ribbon, settings
-│   ├── settings.ts               # License key, model config, paths
-│   ├── aliyun-stt.ts             # ASR pipeline: chunking, proxy, cleanup
-│   ├── qwen-api.ts               # Streaming AI analysis via qwen-plus
-│   ├── audio-compress.ts         # FFmpeg detection & audio extraction
-│   ├── review-modal.ts           # Main UI: file picker, progress, save
-│   ├── file-utils.ts             # File validation, size formatting
-│   └── report-generator.ts       # Vault writer with frontmatter
-│
-├── worker-aliyun/                # Alibaba Cloud FC Functions
-│   ├── index.js                  # API proxy, key management, admin panel
-│   └── asr-proxy.js              # ASR-dedicated endpoint (512MB)
-│
-├── admin.html                    # Standalone admin dashboard
-├── admin-cli.mjs                 # CLI key management
-├── customer.html                 # Customer self-registration page
-├── server.mjs                    # Local development server
-│
-├── main.ts / manifest.json       # Plugin entry & manifest
-├── esbuild.config.mjs            # Build configuration
-└── tsconfig.json                 # TypeScript configuration
-```
-
----
-
-## Quick Start
-
-### Prerequisites
-- Node.js 18+ / npm
-- Alibaba Cloud FC (Function Compute)
-- DashScope API Key (Model Studio)
-- Obsidian ≥ 1.4.0
-
-### Build
 ```bash
 npm install
 npm run build
 ```
 
-### Deploy Functions
-Deploy `worker-aliyun/index.js` and `worker-aliyun/asr-proxy.js` to separate FC functions:
-- **Main function** (128MB): API proxy, key management, admin panel — mount NAS at `/mnt/interview_proxy/`
-- **ASR function** (512MB): Dedicated transcription endpoint for large payloads
+## 技术栈
 
-### Local Admin
-```bash
-node server.mjs
-# Admin panel:  http://localhost:8888/admin
-# Customer page: http://localhost:8888/customer
-```
+| 组件 | 技术 |
+|------|------|
+| 插件运行时 | Obsidian API (TypeScript) |
+| 构建工具 | esbuild + tsc |
+| 语音识别 | 阿里云百炼 qwen3-asr-flash |
+| AI 分析 | 阿里云百炼 qwen-plus |
+| 音频处理 | FFmpeg |
 
----
+## 许可
 
-## API Reference
-
-| Endpoint | Auth | Description |
-|----------|------|-------------|
-| `POST /api/transcribe` | License Key | Speech-to-text via fun-asr-flash |
-| `POST /api/chat` | License Key | AI analysis via qwen-plus |
-| `GET /api/quota` | License Key | Query remaining quota |
-| `POST /api/review-complete` | License Key | Report quota consumption |
-| `GET/POST /admin/*` | Admin Key | Key generation & management |
-| `POST /customer/register` | Public | Self-service registration |
-| `POST /customer/find-key` | Public | Look up key by email |
-| `POST /customer/quota` | Public | Query quota by key |
-
-**Model routing**: The proxy auto-detects the model and routes to the correct DashScope endpoint — multimodal-generation for `fun-asr-flash`, compatible-mode for legacy models.
-
----
-
-## Tech Stack
-
-| Component | Technology |
-|-----------|------------|
-| Plugin Runtime | Obsidian API (TypeScript) |
-| Build System | esbuild + tsc |
-| Speech Recognition | DashScope fun-asr-flash-2026-06-15 |
-| AI Analysis | DashScope qwen-plus |
-| Serverless | Alibaba Cloud FC (Node.js 18) |
-| Persistence | Alibaba Cloud NAS |
-| Audio Processing | FFmpeg (system-level) |
+MIT
