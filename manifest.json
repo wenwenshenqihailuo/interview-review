@@ -1,7 +1,7 @@
 {
   "id": "interview-review",
   "name": "Interview Review Assistant",
-  "version": "v1.0.0",
+  "version": "1.0.0",
   "minAppVersion": "1.4.0",
   "description": "录音转文字 + AI深度分析，一键生成面试复盘报告。一个阿里云百炼API Key全搞定。",
   "author": "",
